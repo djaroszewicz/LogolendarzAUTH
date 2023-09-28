@@ -11,12 +11,14 @@ namespace LogolendarzAuthAPI.Service
     private readonly AppDbContext _db;
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-    public AuthService(AppDbContext db, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AuthService(AppDbContext db, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IJwtTokenGenerator jwtTokenGenerator)
     {
       _db = db;
       _userManager = userManager;
       _roleManager = roleManager;
+      _jwtTokenGenerator = jwtTokenGenerator;
     }
 
     public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
@@ -28,6 +30,8 @@ namespace LogolendarzAuthAPI.Service
       {
         return new LoginResponseDto() { User = null, Token = "" };
       }
+
+      var token = _jwtTokenGenerator.GenerateToken(user);
 
       UserDto userDTO = new()
       {

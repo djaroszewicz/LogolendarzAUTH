@@ -6,5 +6,6 @@ namespace LogolendarzAuthAPI.Service.IService
   {
     Task<string> Register(RegisterRequestDto registerRequestDto);
     Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto);
+    Task<bool> AssignRole(string email, string roleName);
   }
 }
