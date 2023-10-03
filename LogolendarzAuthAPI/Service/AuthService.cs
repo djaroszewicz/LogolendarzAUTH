@@ -3,6 +3,7 @@ using LogolendarzAuthAPI.Models;
 using LogolendarzAuthAPI.Models.Dto;
 using LogolendarzAuthAPI.Service.IService;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LogolendarzAuthAPI.Service
 {
@@ -19,6 +20,23 @@ namespace LogolendarzAuthAPI.Service
       _userManager = userManager;
       _roleManager = roleManager;
       _jwtTokenGenerator = jwtTokenGenerator;
+    }
+
+    public async Task<bool> AssignRole(string email, string roleName)
+    {
+      var user = _db.AppUser.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+      if(user != null) 
+      {
+        if(!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
+        {
+          _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+        }
+
+        await _userManager.AddToRoleAsync(user, roleName);
+
+        return true;
+      }
+      return false;
     }
 
     public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
